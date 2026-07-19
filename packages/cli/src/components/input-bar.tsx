@@ -122,7 +122,7 @@ export function InputBar ({onSubmit, disabled = false}: Props) {
                 borderColor={ colors.primary} 
                 customBorderChars={{
                     ...EmptyBorder,
-                     vertical: "▎",     
+                     vertical: "▐",     
                     bottomLeft: "╰",
                 }} 
                 width={'100%'} 
