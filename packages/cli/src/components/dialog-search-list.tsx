@@ -1,3 +1,4 @@
+
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { TextAttributes, type InputRenderable, type ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";
@@ -103,7 +104,7 @@ export function DialogSearchList<T>({
                     {filtered.map((item, i) => {
                         const isSelected = i === selectedIndex;
                         return (
-                            <box
+                      <box
                                 key={getKey(item)}
                                 flexDirection="row"
                                 height={1}
