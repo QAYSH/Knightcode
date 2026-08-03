@@ -4,6 +4,7 @@
     "private": "true",
     "export": {
         ".": "./src/index.ts",
+        "./client": "./src/client.ts",
         ".enums": "./src/enums.ts"
     },
     "scripts": {
