@@ -1,4 +1,3 @@
-
 import { useCallback, useRef, useState, type ReactNode } from "react";
 import { TextAttributes, type InputRenderable, type ScrollBoxRenderable } from "@opentui/core";
 import { useKeyboard } from "@opentui/react";

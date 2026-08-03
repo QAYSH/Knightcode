@@ -1,11 +1,11 @@
 {
-   "name": "@knightcode/shared",
+   "name": "@nightcode/shared",
    "type": "module",
    "private": "true",
    "export":{ 
         ".": "./src/index.ts"
    },
-   "dependencies": {
+   "dependencies": { 
       "zod": "^4.4.3"
    }
 }
