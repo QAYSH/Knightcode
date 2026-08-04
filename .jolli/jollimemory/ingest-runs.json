@@ -1,0 +1,38 @@
+[
+	{
+		"startedAt": "2026-08-03T22:20:27.116Z",
+		"durationMs": 25625,
+		"triggeredBy": "post-commit",
+		"outcome": "OK",
+		"batches": 1,
+		"ingested": 1,
+		"touchedSlugs": 1,
+		"routeCalls": 1,
+		"reconcileCalls": 1,
+		"topicFailures": []
+	},
+	{
+		"startedAt": "2026-08-03T22:34:07.213Z",
+		"durationMs": 24297,
+		"triggeredBy": "post-commit",
+		"outcome": "OK",
+		"batches": 1,
+		"ingested": 1,
+		"touchedSlugs": 1,
+		"routeCalls": 1,
+		"reconcileCalls": 1,
+		"topicFailures": []
+	},
+	{
+		"startedAt": "2026-08-03T22:42:52.276Z",
+		"durationMs": 31832,
+		"triggeredBy": "post-commit",
+		"outcome": "OK",
+		"batches": 1,
+		"ingested": 1,
+		"touchedSlugs": 1,
+		"routeCalls": 1,
+		"reconcileCalls": 1,
+		"topicFailures": []
+	}
+]

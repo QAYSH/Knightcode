@@ -1,0 +1,8 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@nightcode/shared": ["../shared/src/index.ts"]
+    }
+  }
+}
