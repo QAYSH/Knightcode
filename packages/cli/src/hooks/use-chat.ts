@@ -132,7 +132,7 @@ export function useChat(
                 interrupted: true,
             },
         ]);
-    }, [])
+    }, [updateMessages])
 
     const clearStream = useCallback(
         (requestId: string) => {
