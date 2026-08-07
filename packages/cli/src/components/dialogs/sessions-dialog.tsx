@@ -4,8 +4,8 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router";
 import {useDialog } from "../../providers/dialog";
 import { useToast } from "../../providers/toast";
-import { apiClient } from "../../../lib/api-client";
-import  { getErrorMessage} from "../../../lib/http-errors";
+import { apiClient } from "../../lib/api-client";
+import  { getErrorMessage} from "../../lib/http-errors";
 import { DialogSearchList } from "../dialog-search-list";
 import type { InferResponseType } from "hono/client";
 

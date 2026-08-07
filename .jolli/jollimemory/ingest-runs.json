@@ -36,6 +36,20 @@
 		"topicFailures": []
 	},
 	{
+		"startedAt": "2026-08-06T23:43:26.368Z",
+		"durationMs": 23832,
+		"triggeredBy": "post-commit",
+		"outcome": "OK",
+		"batches": 1,
+		"ingested": 2,
+		"touchedSlugs": 2,
+		"routeCalls": 1,
+		"reconcileCalls": 2,
+		"topicFailures": []
+	},
+	{
+		"startedAt": "2026-08-07T00:02:53.101Z",
+		"durationMs": 22847,
 		"startedAt": "2026-08-04T13:15:26.557Z",
 		"durationMs": 34474,
 		"triggeredBy": "post-merge",
@@ -50,6 +64,7 @@
 	{
 		"startedAt": "2026-08-06T19:37:26.287Z",
 		"durationMs": 29411,
+
 		"triggeredBy": "post-commit",
 		"outcome": "OK",
 		"batches": 1,
