@@ -3,7 +3,7 @@ export type ModelPricing = {
     outputUsdPerMillionTokens: number;
 };
 
-export type SupportedProvider = "anthropic" | "openai"
+export type SupportedProvider = "anthropic" | "openai" 
 
 type SupportedChatModelDefinition ={
     id: string;
@@ -60,6 +60,8 @@ export const SUPPORTED_CHAT_MODELS = [
             outputUsdPerMillionTokens: 1.25,
         },
     },
+
+
 ] as const satisfies readonly SupportedChatModelDefinition[];
 
 export type SupportedChatModel = (typeof SUPPORTED_CHAT_MODELS)[number];
