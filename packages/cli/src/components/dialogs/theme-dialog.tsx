@@ -5,7 +5,7 @@ import { DialogSearchList } from '../dialog-search-list';
 import { THEMES } from '../../theme';
 import type { Theme } from '../../theme';
 
-export const ThemeDialogContext = () => {
+export const ThemeDialogContent = () => {
     const { setTheme, currentTheme } = useTheme();
     const dialog = useDialog();
     const confirmedRef = useRef(false);
