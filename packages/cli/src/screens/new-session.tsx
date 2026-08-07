@@ -6,8 +6,8 @@ import { useTheme } from "../providers/theme";
 import { SessionShell } from "../components/session-shell";
 import { UserMessage } from "../components/messages";
 import { useToast } from "../providers/toast";
-import { apiClient } from "../../lib/api-client";
-import { getErrorMessage } from "../../lib/http-errors";
+import { apiClient } from "../lib/api-client";
+import { getErrorMessage } from "../lib/http-errors";
 
 const newSessionStateSchema = z.object({
     message: z.string(),
