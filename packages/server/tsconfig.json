@@ -1,6 +1,6 @@
 {
+  //  "extends":"../../tsconfig.base.json"
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
       "@nightcode/shared": ["../shared/src/index.ts"],
       "@nightcode/database": ["../database/"]
