@@ -30,7 +30,7 @@ export function SessionShell({
             <box flexShrink={0}>
                 <InputBar onSubmit={onSubmit} disabled={inputDisabled} />
             </box>
-            <box flexShrink={1} flexDirection="row" justifyContent="space-between" width={"100%"} height={1} gap={2} paddingLeft={1}>
+            <box flexShrink={0} flexDirection="row" justifyContent="space-between" width={"100%"} height={1} gap={2} paddingLeft={1}>
                 <box flexDirection="row" alignItems="center" gap={2}>
                     {loading ? (
                         <>
