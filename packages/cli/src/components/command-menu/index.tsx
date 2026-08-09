@@ -13,11 +13,11 @@ type CommandMenuProps = {
     query: string;
     selectedIndex: number;
     scrollRef: RefObject<ScrollBoxRenderable | null >;
-    onselect: (command: string) => void;
+    onSelect: (command: number) => void;
     onExecute: (index:number)  => void; 
 };
 
-export function CommandMenu({ query, selectedIndex, scrollRef, onselect, onExecute }: CommandMenuProps) { 
+export function CommandMenu({ query, selectedIndex, scrollRef, onSelect, onExecute }: CommandMenuProps) { 
     const { colors } = useTheme();
     const filtered = getFilteredCommands(query);
     const visibleHeight = Math.min(filtered.length, MAX_VISIBLE_ITEMS);

@@ -6,6 +6,7 @@ import { z} from 'zod'
 import {db} from "../../../database/src/client";
 import { Role, Mode, MessageStatus } from "../../../database/src/enum";
 import { findSupportedChatModel } from '@nightcode/shared';
+import type { AuthenticatedEnv } from '../middleware/require-auth';
 
 
 
@@ -31,9 +32,11 @@ if (!result.success) {
 }
 });
 
-const app = new Hono()
+const app = new Hono<AuthenticatedEnv>()
  .get("/", async (c) => {
+    const userId = c.get("userId");
     const sessions = await db.session.findMany({
+        where: { userId},
         orderBy: { createdAt: "desc" },
         select:{
             id: true,
@@ -42,10 +45,10 @@ const app = new Hono()
         },
     });
 
-    Sentry.logger.info("Listed sessions", {
-        count: sessions.length,
+    // Sentry.logger.info("Listed sessions", {
+    //     count: sessions.length,
 
-    })
+    // })
 
     return c.json(sessions);
 })
@@ -55,8 +58,9 @@ const app = new Hono()
     // throw new HTTPException(500, {message: "Mock error for testing error handling"});
 
     const id = c.req.param("id");
+    const userId = c.get("userId");
     const session = await db.session.findUnique({
-        where: { id },
+        where: { id, userId },
         include: {
             messages: {
                 orderBy: { createdAt: "asc" },
@@ -65,30 +69,31 @@ const app = new Hono()
     });
     if (!session) {
 
-        Sentry.logger.warn("Session not found", {
-            sessionId: id,
-            userId: "mock-user"
-        })
+        // Sentry.logger.warn("Session not found", {
+        //     sessionId: id,
+        //     userId: "mock-user"
+        // })
 
         return c.json({ error: "Session not found" }, 404);
     }
 
-    Sentry.logger.info("Loaded session", {
-        sessionId: session.id,
-        messageCount: session.messages.length,
-    });
+    // Sentry.logger.info("Loaded session", {
+    //     sessionId: session.id,
+    //     messageCount: session.messages.length,
+    // });
 
     return c.json(session);
 })
 .post("/", createSessionValidator, async(c) => {
    // await new Promise((r) => setTimeout(r, 5000));
     // throw new HTTPException(500, {message: "Mock error for testing error handling"});
+    const userId = c.get("userId");
     const { initialMessage, ...data } = c.req.valid("json");
     
 const session = await db.session.create({
     data: {
         ...data,
-        userId: "mock-user",
+        userId,
         ...(initialMessage && {
             messages: {
                 create: {
@@ -101,10 +106,10 @@ const session = await db.session.create({
     include: { messages: true },
 });
 
-    Sentry.logger.info("Created session", {
-        sessionId: session.id,
-        title: session.title,
-    })
+    // Sentry.logger.info("Created session", {
+    //     sessionId: session.id,
+    //     title: session.title,
+    // })
 
     return c.json(session, 201);
 });
