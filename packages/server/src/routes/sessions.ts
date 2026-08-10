@@ -5,8 +5,10 @@ import * as Sentry from "@sentry/hono/bun"
 import { z} from 'zod'
 import {db} from "../../../database/src/client";
 import { Role, Mode, MessageStatus } from "../../../database/src/enum";
-import { findSupportedChatModel } from '@nightcode/shared';
 import type { AuthenticatedEnv } from '../middleware/require-auth';
+import { requireCreditsBalance } from '../middleware/require-credits-balance';
+import { isSupportedChatModel } from '../lib/models';
+
 
 
 
@@ -19,7 +21,7 @@ const createSessionSchema = z.object({
         content: z.string(),
         mode: z.enum(Mode),
         model: z.string()
-            .refine((id) => !!findSupportedChatModel(id), "Unsupported model"),})
+            .refine(isSupportedChatModel, "Unsupported model"),})
             .optional(),
 });
 const createSessionValidator = zValidator("json", createSessionSchema, (result, c) => {
@@ -84,7 +86,7 @@ const app = new Hono<AuthenticatedEnv>()
 
     return c.json(session);
 })
-.post("/", createSessionValidator, async(c) => {
+.post("/", requireCreditsBalance, createSessionValidator, async(c) => {
    // await new Promise((r) => setTimeout(r, 5000));
     // throw new HTTPException(500, {message: "Mock error for testing error handling"});
     const userId = c.get("userId");
