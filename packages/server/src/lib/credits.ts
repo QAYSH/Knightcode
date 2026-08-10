@@ -24,12 +24,14 @@ const USD_PER_CREDIT = 0.01;
 function getTokenCounts(usage: LanguageModelUsage): TokenCounts {
     const inputTokens = usage.inputTokens;const outputTokens = usage.outputTokens;
 
-    if (inputTokens == null || outputTokens == null) {
+    if (inputTokens == null || outputTokens == null ||
+        !Number.isFinite(inputTokens ) || !Number.isFinite(outputTokens) || !Number.isInteger(inputTokens) || !Number.isInteger(outputTokens) || inputTokens < 0 || outputTokens < 0 )
+     {
         throw new Error("Credits conversation requires input and output token counts");
     }
 
     return {
-        inputTokens,
+        inputTokens, 
         outputTokens,
     };  
 };
