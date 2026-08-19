@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { z } from "zod";
-import { Mode } from "../../../database/src/enum";
+import { Mode } from "../../../shared/src/schemas";
+import { modeSchema } from "../../../shared/src/schemas";
 import { useNavigate, useLocation } from "react-router";
 import { useTheme } from "../providers/theme";
 import { SessionShell } from "../components/session-shell";
@@ -11,7 +12,7 @@ import { getErrorMessage } from "../lib/http-errors";
 
 const newSessionStateSchema = z.object({
     message: z.string(),
-    mode: z.enum(Mode),
+    mode: modeSchema,
     model: z.string(),
 });
 
@@ -46,13 +47,6 @@ export function NewSession(){
                 const res = await apiClient.sessions.$post({
                     json: {
                         title: state.message.slice(0, 100),
-                        cwd: process.cwd(),
-                        initialMessage: {
-                            role: "USER",
-                            content: state.message,
-                            mode: state.mode,
-                            model: state.model,
-                        },
                     },
                 });
 
@@ -63,7 +57,7 @@ export function NewSession(){
                 }
 
                 const session = await res.json();
-                navigate(`/sessions/${session.id}`, { replace: true, state: { session }});
+                navigate(`/sessions/${session.id}`, { replace: true, state: { session, initialPrompt: state }});
 
             } catch (error) {
                 if (ignore) return;

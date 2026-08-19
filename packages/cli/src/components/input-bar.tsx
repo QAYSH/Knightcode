@@ -16,7 +16,7 @@ import { useKeyboardLayer } from "../providers/keyboard-layer";
 import { useDialog } from "../providers/dialog";
 import { useTheme } from "../providers/theme";
 import { usePromptConfig } from "../providers/prompt-config";
-import { Mode } from "../../../database/src/enum";
+import { Mode } from "../../../shared/src/schemas";
 
 const MAX_VISIBLE_MENTIONS = 8;
 const CURRENT_DIRECTORY = process.cwd();
@@ -97,7 +97,6 @@ function findActiveMention(text: string, cursorOffset: number): MentionMatch | n
         const lastSlashIndex = hasTrailingSlash
             ? normalizedQuery.length -1
             : normalizedQuery.lastIndexOf("/")
-
 
         const directoryPart = hasTrailingSlash
             ? normalizedQuery.slice(0, -1)
