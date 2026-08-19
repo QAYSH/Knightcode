@@ -1,11 +1,11 @@
 import { useTheme } from "../../providers/theme";
 import { EmptyBorder } from "../border";
-import { Mode } from "../../../../database/src/enum";
+import { Mode, type ModeType} from "../../../../shared/src/schemas";
 
 
 type Props = {
     message: string;
-    mode: Mode;
+    mode: ModeType;
 };
 
 export function UserMessage ({ message, mode }: Props) {

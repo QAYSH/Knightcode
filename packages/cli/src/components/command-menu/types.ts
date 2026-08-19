@@ -1,4 +1,4 @@
-import type { Mode } from "../../../../database/src/enum";
+import type { ModeType } from "../../../../shared/src/schemas";
 import type { SupportedChatModelId } from "../../../../shared/src/models";
 import type { DialogContextValue } from "../../providers/dialog";
 import type { ToastContextValue } from "../../providers/toast";
@@ -8,8 +8,8 @@ export type CommandContext = {
     toast: ToastContextValue;
     dialog: DialogContextValue;
     navigate: (path: string) => void;
-    mode: Mode;
-    setMode: (mode: Mode) => void;
+    mode: ModeType;
+    setMode: (mode: ModeType) => void;
     setModel: (model: SupportedChatModelId) => void;
 };
 

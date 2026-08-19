@@ -2,10 +2,11 @@
    "name": "@nightcode/shared",
    "type": "module",
    "private": "true",
-   "export":{ 
-        ".": "./src/index.ts"
+   "export": {
+      ".": "./src/index.ts"
    },
-   "dependencies": { 
+   "dependencies": {
+      "ai": "^7.0.59",
       "zod": "^4.4.3"
    }
 }

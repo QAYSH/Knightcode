@@ -15,7 +15,7 @@ export function getPolarAccessToken() {
 }
 
 export function getPolarProductId() {
-    return getRequiredEnv("POLAR_ACCESS_TOKEN");
+    return getRequiredEnv("POLAR_PRODUCT_ID");
 }
 
 export function getPolarCreditsMeterId(){

@@ -1,10 +1,10 @@
 import "opentui-spinner/react";
-import { Mode } from "../../../database/src/enum";
+import { Mode, type ModeType } from "../../../shared/src/schemas";
 import { useTheme } from "../providers/theme";
 
 
 type Props = {
-    mode? : Mode;
+    mode? : ModeType;
 };
 
 export function Spinner({ mode = Mode.BUILD}: Props) {
