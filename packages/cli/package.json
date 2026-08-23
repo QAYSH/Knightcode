@@ -1,8 +1,12 @@
 {
-  "name": "cli",
+  "name": "@nightcode/cli",
+  "version": "1.0.0",
   "module": "src/index.tsx",
   "type": "module",
   "private": true,
+  "bin": {
+    "nightcode": "./bin/nightcode"
+  },
   "scripts": {
     "dev": "bun run --watch src/index.tsx"
   },
@@ -18,6 +22,8 @@
     "@ai-sdk/react": "^4.0.62",
     "@nightcode/shared": "workspace:*",
     "@opentui/core": "^0.4.1",
+    "@opentui/core-win32-arm64": "^0.5.4",
+    "@opentui/core-win32-x64": "^0.5.4",
     "@opentui/react": "^0.4.1",
     "ai": "^7.0.59",
     "date-fns": "^4.4.0",

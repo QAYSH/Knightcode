@@ -11,7 +11,7 @@ import type { InferResponseType } from "hono/client";
 
 
 
-type Session = InferResponseType<(typeof apiClient.sessions) ["$get"], 200>[number];
+type Session = InferResponseType<(typeof apiClient.sessions)["$get"], 200>[number];
 
 export const SessionsDialogContent = () => {
     const [sessions, setSessions] = useState<Session[]>([]);
@@ -42,7 +42,7 @@ export const SessionsDialogContent = () => {
                 if (!ignore) {
                     show({
                         variant: "error",
-                        message: error instanceof Error ? error.message : "Failes to fetch sessions",
+                        message: error instanceof Error ? error.message : "Failed to fetch sessions",
                     });
                     close();
                 }
@@ -89,7 +89,7 @@ export const SessionsDialogContent = () => {
                         fg={isSelected ? "black" : undefined}
                         attributes={TextAttributes.DIM}
                     >
-                        {format(new Date(sessionStorage.createdAt), "hh:mm a")}
+                        {format(new Date(session.createdAt), "hh:mm a")}
                     </text>
                 </>
 
