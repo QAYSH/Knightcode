@@ -1,15 +1,22 @@
-# react
+# KnightCode CLI
 
-To install dependencies:
+KnightCode is a terminal-based AI coding assistant.
+
+## Development
+
+Install dependencies:
 
 ```bash
 bun install
 ```
 
-To run:
+Run in development:
 
 ```bash
-bun dev
+bun run dev
 ```
 
-This project was created using `bun create tui`. [create-tui](https://git.new/create-tui) is the easiest way to get started with OpenTUI.
+## Release binaries
+
+Production releases ship as standalone executables named `knightcode`.
+Users do not need Bun or local environment variables to run the released binaries.
