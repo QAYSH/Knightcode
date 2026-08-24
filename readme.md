@@ -2,7 +2,7 @@
 
 A terminal-based AI coding agent that brings planning and building assistance directly to your command line.
 
-<img width="1241" height="498" alt="NightCode Screenshot" src="https://github.com/user-attachments/assets/839db9cf-c7f7-460d-af75-16579cad2737" />
+<img width="1241" height="498" alt="KnightCode Screenshot" src="https://github.com/user-attachments/assets/839db9cf-c7f7-460d-af75-16579cad2737" />
 
 **KnightCode consists of two parts:**
 - **CLI** (runs on the user's machine): Terminal UI + tool execution (read/write files, grep, and optionally shell commands)
@@ -46,7 +46,7 @@ cd knightcode
 
 2. **Install dependencies:**
 ```bash
-bun install
+bun install --ignore-scripts
 ```
 
 3. **Run the CLI:**
@@ -144,14 +144,18 @@ Before you begin, ensure you have the following installed:
 ```bash
 git clone git@github.com:qaysh/knightcode.git
 cd knightcode
-bun install
+bun install --ignore-scripts
 ```
 
-### Configure Environment
+### Configure Environment (For Full Development)
 
-Create a `.env` file at the repository root:
+If you want to run the full local stack (CLI + Server + Database), create a `.env` file:
 
 ```bash
+# Windows
+copy .env.example .env
+
+# Mac/Linux
 cp .env.example .env
 ```
 
