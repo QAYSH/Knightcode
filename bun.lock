@@ -5,7 +5,7 @@
     "": {
       "name": "Nightcode",
       "dependencies": {
-        "@opentui/core-win32-arm64": "^0.5.4",
+        "@opentui/core-win32-arm64": "0.4.1",
         "dotenv": "^17.4.2",
       },
     },
@@ -19,8 +19,8 @@
         "@ai-sdk/react": "^4.0.62",
         "@nightcode/shared": "workspace:*",
         "@opentui/core": "^0.4.1",
-        "@opentui/core-win32-arm64": "^0.5.4",
-        "@opentui/core-win32-x64": "^0.5.4",
+        "@opentui/core-win32-arm64": "0.4.1",
+        "@opentui/core-win32-x64": "0.4.1",
         "@opentui/react": "^0.4.1",
         "ai": "^7.0.59",
         "date-fns": "^4.4.0",
@@ -157,9 +157,9 @@
 
     "@opentui/core-linux-x64-musl": ["@opentui/core-linux-x64-musl@0.4.1", "https://registry.npmmirror.com/@opentui/core-linux-x64-musl/-/core-linux-x64-musl-0.4.1.tgz", { "os": "linux", "cpu": "x64" }, "sha512-UYcp8XGX4DZXN+VYUVuCrJkbFMJ0L+VUVu0t5KqqaeJ74fI4NZ+DmwNqPPg1+C+EIzoW4QChlEUdhlZRdiEQiA=="],
 
-    "@opentui/core-win32-arm64": ["@opentui/core-win32-arm64@0.5.4", "https://registry.npmmirror.com/@opentui/core-win32-arm64/-/core-win32-arm64-0.5.4.tgz", { "os": "win32", "cpu": "arm64" }, "sha512-F9sB6suPJmwkLF2MwKEC+OtwP6cn5QspIm4MCh2hmu3mVqSz9GDpYID1X3sAh9/V79EVocqiOSqI3KeCTRouKQ=="],
+    "@opentui/core-win32-arm64": ["@opentui/core-win32-arm64@0.4.1", "https://registry.npmmirror.com/@opentui/core-win32-arm64/-/core-win32-arm64-0.4.1.tgz", { "os": "win32", "cpu": "arm64" }, "sha512-hkIbpUJcKd4iLetTygPlFS45teOBTto49aXuxNeafYQUNd3ehiSwJENNBlAGULLfq+KP3dMJoWUiOcbuPVOQRA=="],
 
-    "@opentui/core-win32-x64": ["@opentui/core-win32-x64@0.5.4", "https://registry.npmmirror.com/@opentui/core-win32-x64/-/core-win32-x64-0.5.4.tgz", { "os": "win32", "cpu": "x64" }, "sha512-2/6dPPPJ9xL/bWz9jh+lZeV2g/tbxZ9N4FBIqwhnqSfIYy5jOnscsPZpcN4X6PstfJAo2yf0Ebk/tLTOzOS6TQ=="],
+    "@opentui/core-win32-x64": ["@opentui/core-win32-x64@0.4.1", "https://registry.npmmirror.com/@opentui/core-win32-x64/-/core-win32-x64-0.4.1.tgz", { "os": "win32", "cpu": "x64" }, "sha512-s1kGBcloy4ksl3wFCMqqOUFtXWlTTpzxe6pkLFhFhzgqKsMXHE9pwebiS3pzJkkFUxah5MYG+kbcn2Dw2Gdncg=="],
 
     "@opentui/react": ["@opentui/react@0.4.1", "https://registry.npmmirror.com/@opentui/react/-/react-0.4.1.tgz", { "dependencies": { "@opentui/core": "0.4.1", "react-reconciler": "^0.33.0" }, "peerDependencies": { "react": ">=19.2.0", "react-devtools-core": "^7.0.1", "ws": "^8.18.0" } }, "sha512-hYNS8yhwVA+aGru74rtaxI81TM+rEIhMVOdooQOZRHcyVlml3inmKcI5n0Kroy4Vj4M0rCiVAPhovvqf+xfxGA=="],
 
@@ -231,7 +231,7 @@
 
     "@tanstack/query-core": ["@tanstack/query-core@5.101.4", "https://registry.npmmirror.com/@tanstack/query-core/-/query-core-5.101.4.tgz", {}, "sha512-gNwcvOJcRbLWPOLG/2OBm+zM+Yv+MKsXKEOWC57USuZDEsI71hEErQsiEGx5wX9rzWWkfwM0fVSPoiIFSsxfiw=="],
 
-    "@types/bun": ["@types/bun@1.3.14", "https://registry.npmmirror.com/@types/bun/-/bun-1.3.14.tgz", { "dependencies": { "bun-types": "1.3.14" } }, "sha512-h1hFqFVcvAvD9j9K7ZW7vd82aSA+rTdznZa+5bwvCwqSB1jmmfLcbIWhOLx1/+boy/xmjgCs/OMUL8hRJSmnPw=="],
+    "@types/bun": ["@types/bun@1.4.0", "https://registry.npmmirror.com/@types/bun/-/bun-1.4.0.tgz", { "dependencies": { "bun-types": "1.4.0" } }, "sha512-K+lZULY23vRgK/CfTjFIV+tyifaNdSMlPh9j+6mQ/cLfpOznLyAuzgV/JQysyECpkBQLVMSyvjlr2fBUSA9wFQ=="],
 
     "@types/d3-array": ["@types/d3-array@3.0.3", "https://registry.npmmirror.com/@types/d3-array/-/d3-array-3.0.3.tgz", {}, "sha512-Reoy+pKnvsksN0lQUlcH6dOGjRZ/3WRwXR//m+/8lt1BXeI4xyaUZoqULNjyXXRuh0Mj4LNpkCvhUpQlY3X5xQ=="],
 
@@ -303,7 +303,7 @@
 
     "bun-ffi-structs": ["bun-ffi-structs@0.2.3", "https://registry.npmmirror.com/bun-ffi-structs/-/bun-ffi-structs-0.2.3.tgz", { "peerDependencies": { "typescript": "^5" } }, "sha512-pgJiXP+hEgFo9qG51J6ItfY4ocs3vniwNzJ9WhoakB3QB2GdzQxX2EXssentPYlB2hOfJrTjO6iIQkWYzUodpg=="],
 
-    "bun-types": ["bun-types@1.3.14", "https://registry.npmmirror.com/bun-types/-/bun-types-1.3.14.tgz", { "dependencies": { "@types/node": "*" } }, "sha512-4N0ig0fEomHt5R0KCFWjovxow98rIoRwKolrYdCcknNwMekCXRnWEUvgu5soYV8QXtVsrUD8B95MBOZGPvr6KQ=="],
+    "bun-types": ["bun-types@1.4.0", "https://registry.npmmirror.com/bun-types/-/bun-types-1.4.0.tgz", { "dependencies": { "@types/node": "*" } }, "sha512-iIKw23BspnQQYd3prITOBxeUsxBHnwzX6YJfGMuNOZzeNcMmVqzIIVGRm1l69ogaPQmb4wB6BN8mA5bE9YuC5Q=="],
 
     "bundle-name": ["bundle-name@4.1.0", "https://registry.npmmirror.com/bundle-name/-/bundle-name-4.1.0.tgz", { "dependencies": { "run-applescript": "^7.0.0" } }, "sha512-tjwM5exMg6BGRI+kNmTntNsvdZS1X8BFYS6tnJ2hdH0kVxM6/eVZ2xy+FqStSWvYmtfFMDLIxurorHwDKfDz5Q=="],
 
@@ -628,10 +628,6 @@
     "@ai-sdk/openai/@ai-sdk/provider": ["@ai-sdk/provider@4.0.5", "https://registry.npmmirror.com/@ai-sdk/provider/-/provider-4.0.5.tgz", { "dependencies": { "json-schema": "^0.4.0" } }, "sha512-9WAerTaPU2jcVi8dh8x27tySEuLur1Kfg7Go74GuCmsC/2MDSvrTkrK8ZrXWjryEevKfcPPmO1enveE7eqlzoA=="],
 
     "@ai-sdk/openai/@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@5.0.20", "https://registry.npmmirror.com/@ai-sdk/provider-utils/-/provider-utils-5.0.20.tgz", { "dependencies": { "@ai-sdk/provider": "4.0.5", "@standard-schema/spec": "^1.1.0", "@workflow/serde": "4.1.0", "eventsource-parser": "^3.0.8", "undici": "^7.28.0" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-9W8c2mXiGgbo9sBBT4ybEWF8znxla2CO8VTim8t5oCCLP4aDH4o6RvkHfwL/iLC6mEbO4a6LpS2FBbQHccU+ig=="],
-
-    "@opentui/core/@opentui/core-win32-arm64": ["@opentui/core-win32-arm64@0.4.1", "https://registry.npmmirror.com/@opentui/core-win32-arm64/-/core-win32-arm64-0.4.1.tgz", { "os": "win32", "cpu": "arm64" }, "sha512-hkIbpUJcKd4iLetTygPlFS45teOBTto49aXuxNeafYQUNd3ehiSwJENNBlAGULLfq+KP3dMJoWUiOcbuPVOQRA=="],
-
-    "@opentui/core/@opentui/core-win32-x64": ["@opentui/core-win32-x64@0.4.1", "https://registry.npmmirror.com/@opentui/core-win32-x64/-/core-win32-x64-0.4.1.tgz", { "os": "win32", "cpu": "x64" }, "sha512-s1kGBcloy4ksl3wFCMqqOUFtXWlTTpzxe6pkLFhFhzgqKsMXHE9pwebiS3pzJkkFUxah5MYG+kbcn2Dw2Gdncg=="],
 
     "@prisma/engines/@prisma/get-platform": ["@prisma/get-platform@7.9.1", "https://registry.npmmirror.com/@prisma/get-platform/-/get-platform-7.9.1.tgz", { "dependencies": { "@prisma/debug": "7.9.1" } }, "sha512-PK8R60YZRQvYxBrGG9i7l2/rFyzy+2MuI1dKtmtrCqPH8YpiJx/MfiC7LRzX5786rZDEv7BngcjfIJW4/9ADuw=="],
 
