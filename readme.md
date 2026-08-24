@@ -1,12 +1,66 @@
 # KnightCode
 
-A terminal-based AI coding agent that brings the power of AI directly to your command line. Plan, chat, and build inside your local project with a Bun-powered CLI, Hono API, Prisma ORM, Clerk authentication, and AI SDK streaming.
+A terminal-based AI coding agent that brings planning and building assistance directly to your command line.
 
 <img width="1241" height="498" alt="NightCode Screenshot" src="https://github.com/user-attachments/assets/839db9cf-c7f7-460d-af75-16579cad2737" />
 
+**KnightCode consists of two parts:**
+- **CLI** (runs on the user's machine): Terminal UI + tool execution (read/write files, grep, and optionally shell commands)
+- **Server API** (runs on your infrastructure): Authentication, session management, AI streaming, persistence (Postgres), and usage billing/credits (Polar)
+
+> This repository is a Bun monorepo with workspaces under `packages/*`.
+
 ---
 
-## 🚀 Features
+## Table of Contents
+
+- [Try KnightCode (Quickstart)](#try-knightcode-quickstart)
+- [Features](#features)
+- [Architecture Overview](#architecture-overview)
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Environment Variables](#environment-variables)
+- [Clerk OAuth Setup](#clerk-oauth-setup)
+- [Polar Credits Setup](#polar-credits-setup)
+- [Database Setup](#database-setup)
+- [Running the App](#running-the-app)
+- [Production Deployment](#production-deployment)
+- [Development Commands](#development-commands)
+- [Project Structure](#project-structure)
+- [Demo](#demo)
+- [Troubleshooting](#troubleshooting)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
+
+## Try KnightCode (Quickstart)
+
+Want to try KnightCode without setting up the entire backend?
+
+1. **Clone the repository:**
+```bash
+git clone https://github.com/QAYSH/knightcode.git
+cd knightcode
+```
+
+2. **Install dependencies:**
+```bash
+bun install
+```
+
+3. **Run the CLI:**
+```bash
+bun run dev:cli
+```
+
+That's it! The CLI connects to my hosted Railway backend, so you don't need to configure PostgreSQL, Clerk, Polar, or AI providers. Just log in with Clerk (browser opens automatically) and start using KnightCode.
+
+> **Note:** The standalone binary is currently unavailable due to OpenTUI compatibility issues with Bun's `--compile` on Windows. The dev version runs flawlessly and takes just a minute to set up.
+
+---
+
+## Features
 
 - **Terminal AI Chat** - Run an AI coding assistant directly in your terminal with an OpenTUI and React interface
 - **Plan and Build Modes** - Use read-only planning tools or enable write, edit, and shell execution tools for implementation
@@ -19,42 +73,73 @@ A terminal-based AI coding agent that brings the power of AI directly to your co
 
 ---
 
-## 📋 Prerequisites
+## Architecture Overview
 
-Before you begin, ensure you have the following installed and configured:
+KnightCode is built as a distributed system with four main components:
 
-- **Bun** (v1.0.0 or higher) - [Install Bun](https://bun.sh/docs/installation)
-- **Node.js** (v18+) - Compatible environment for Bun
-- **PostgreSQL** database (local or cloud-hosted like Neon)
-- **Clerk** account and application configured for OAuth
-- **Polar** account for credits and billing
-- **Anthropic and/or OpenAI** API keys
+```
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   User CLI  │────▶│   Railway   │────▶│  PostgreSQL │
+│  (terminal) │     │   Server    │     │  (Database) │
+│             │◀────│   (Hono)    │◀────│             │
+└─────────────┘     └─────────────┘     └─────────────┘
+      │                    │                    │
+      │                    ▼                    │
+      │             ┌─────────────┐            │
+      └────────────▶│   AI APIs   │            │
+                    │ (Anthropic/ │            │
+                    │   OpenAI)   │            │
+                    └─────────────┘            │
+                            │                  │
+                            ▼                  │
+                     ┌─────────────┐           │
+                     │   Polar     │           │
+                     │  (Billing)  │           │
+                     └─────────────┘           │
+```
+
+### Component Breakdown
+
+1. **CLI UI** (`packages/cli`)
+   - Presents the terminal interface
+   - Collects user input
+   - Calls the API endpoints (`/sessions/*`, `/chat/*`)
+   - Executes AI-requested tools locally (file read/write, grep, bash), restricted by mode
+
+2. **Server API** (`packages/server`)
+   - Hono-based API
+   - Routes: auth, sessions, chat, billing
+   - Middleware: `requireAuth` (Clerk token) and `requireCreditsBalance` (blocks when credits are 0)
+
+3. **Database** (`packages/database`)
+   - Prisma client + schema
+   - Stores user sessions/messages
+
+4. **Shared** (`packages/shared`)
+   - Shared Zod schemas
+   - AI tool contracts
+   - Model definitions
 
 ---
 
-## 🏗️ Project Structure
+## Prerequisites
 
-```
-packages/
-├── cli/                         # OpenTUI + React terminal client
-│   ├── bin/                     # nightcode executable shim
-│   └── src/
-│       ├── components/          # Terminal UI components, dialogs, messages
-│       ├── hooks/               # Chat and UI hooks
-│       ├── layouts/             # Root terminal layouts
-│       ├── lib/                 # API client, auth, OAuth, local tool execution
-│       ├── providers/           # Dialog, keyboard, prompt, theme, toast providers
-│       └── screens/             # Home, new session, and session screens
-├── database/                    # Prisma schema, generated client, database exports
-├── server/                      # Hono API for auth, billing, sessions, and chat
-└── shared/                      # Shared schemas, tool contracts, and model registry
-```
+Before you begin, ensure you have the following installed:
+
+| Requirement | Version | Notes |
+|------------|---------|-------|
+| **Bun** | v1.0.0+ | [Install Bun](https://bun.sh/docs/installation) |
+| **Node.js** | v18+ | Compatible environment for Bun |
+| **PostgreSQL** | Latest | Local or cloud-hosted (Neon, Railway, etc.) |
+| **Clerk** | Account | For OAuth authentication |
+| **Polar** | Account | For credits and billing |
+| **AI Provider** | API Key | Anthropic and/or OpenAI |
 
 ---
 
-## 🔧 Quickstart
+## Installation
 
-### 1. Clone and Install
+### Clone and Install Dependencies
 
 ```bash
 git clone git@github.com:qaysh/knightcode.git
@@ -62,7 +147,7 @@ cd knightcode
 bun install
 ```
 
-### 2. Configure Environment
+### Configure Environment
 
 Create a `.env` file at the repository root:
 
@@ -70,10 +155,26 @@ Create a `.env` file at the repository root:
 cp .env.example .env
 ```
 
-Fill in the required values:
+Fill in the required values (see [Environment Variables](#environment-variables) section below).
+
+### Quick Start Commands
+
+| Command | Description |
+|---------|-------------|
+| `bun run dev:cli` | Start the CLI in watch mode |
+| `bun run dev:server` | Start the Hono server with hot reload |
+| `bun run link:cli` | Build and link the `nightcode` executable locally |
+
+---
+
+## Environment Variables
+
+This repository expects environment variables for server runtime (auth, DB, AI providers), Polar billing, and the API URL used by the CLI.
+
+### Example `.env` File
 
 ```bash
-# Server Configuration
+# Server URL the CLI should connect to
 API_URL=http://localhost:3000
 
 # Database
@@ -98,22 +199,52 @@ POLAR_SERVER=sandbox  # or production
 POLAR_CREDITS_METER_ID=your_polar_credits_meter_id
 ```
 
-### 3. Set Up Clerk OAuth
+### Environment Variables Reference
 
-NightCode authenticates the CLI through a browser-based Clerk OAuth flow. The CLI opens Clerk authorization in the browser, Clerk redirects to the server at `/auth/callback`, and the server forwards the authorization code back to the local CLI callback server.
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `API_URL` | ✅ | Server API URL (default: http://localhost:3000) |
+| `DATABASE_URL` | ✅ | PostgreSQL connection string |
+| `ANTHROPIC_API_KEY` | ❌* | Anthropic API key |
+| `OPENAI_API_KEY` | ❌* | OpenAI API key |
+| `CLERK_FRONTEND_API` | ✅ | Clerk frontend API URL |
+| `CLERK_OAUTH_CLIENT_SECRET` | ✅ | Clerk OAuth client secret |
+| `CLERK_OAUTH_CLIENT_ID` | ✅ | Clerk OAuth client ID |
+| `CLERK_PUBLISHABLE_KEY` | ✅ | Clerk publishable key |
+| `CLERK_SECRET_KEY` | ✅ | Clerk secret key |
+| `JWT_SECRET` | ✅ | JWT secret for session tokens |
+| `POLAR_ACCESS_TOKEN` | ✅ | Polar access token |
+| `POLAR_PRODUCT_ID` | ✅ | Polar product ID for credits |
+| `POLAR_SERVER` | ❌ | Polar environment (sandbox/production) |
+| `POLAR_CREDITS_METER_ID` | ✅ | Polar meter ID for credits |
 
-**In your Clerk dashboard:**
+*At least one AI provider is required.
 
-1. Go to **Configure** > **Developers** > **OAuth applications**
+---
+
+## Clerk OAuth Setup
+
+The CLI uses Clerk OAuth with PKCE (Proof Key for Code Exchange) for secure authentication.
+
+### Step 1: Create OAuth Application in Clerk
+
+1. In your Clerk dashboard, go to **Configure** → **Developers** → **OAuth applications**
 2. Click **Add OAuth application**
 3. Name it (e.g., "KnightCode")
 4. Select these four scopes: `openid`, `email`, `profile`, and `offline_access`
 5. Turn on **Public** (required for Authorization Code with PKCE flow)
 6. Turn on **Consent screen** so users can approve requested scopes
-7. Add `http://localhost:3000/auth/callback` as a redirect URI for local development
-8. Add your production callback URL for deployment
 
-**Copy credentials to `.env`:**
+### Step 2: Configure Redirect URLs
+
+Add the following redirect URIs:
+
+| Environment | Redirect URL |
+|-------------|--------------|
+| Local Development | `http://localhost:3000/auth/callback` |
+| Production | `https://<your-server-domain>/auth/callback` |
+
+### Step 3: Copy Credentials to `.env`
 
 | Environment Variable | Clerk Value |
 |---------------------|-------------|
@@ -123,13 +254,15 @@ NightCode authenticates the CLI through a browser-based Clerk OAuth flow. The CL
 | `CLERK_PUBLISHABLE_KEY` | Clerk publishable key |
 | `CLERK_SECRET_KEY` | Clerk secret key |
 
-### 4. Set Up Polar Billing
+---
 
-NightCode uses Polar credits to gate new work and bill completed AI usage. The server checks the user's active meter balance before creating sessions or sending chat requests, then ingests usage events after AI responses finish.
+## Polar Credits Setup
 
-**In your Polar dashboard (sandbox mode for local development):**
+Polar provides credits gating and billing ingestion for usage metering.
 
-1. **Create a meter** with these exact settings:
+### Step 1: Create a Meter
+
+In your Polar dashboard:
 
 | Setting | Value |
 |---------|-------|
@@ -147,14 +280,15 @@ The event name and metadata key must match exactly. The server sends usage event
 }
 ```
 
-2. **Create a meter credits benefit** and attach it to a one-time purchase product:
-   - Create a benefit using the `nightcode_credits` meter
-   - Set the credited units (e.g., 1000 credits)
-   - Create a one-time purchase product (e.g., $20 for 1000 credits)
-   - Attach the credits benefit to that product
-   - Set customer portal visibility to **private**
+### Step 2: Create Benefit and Product
 
-**Copy credentials to `.env`:**
+1. Create a **meter credits benefit** using the `nightcode_credits` meter
+2. Set the credited units (e.g., 1000 credits)
+3. Create a **one-time purchase product** (e.g., $20 for 1000 credits)
+4. Attach the credits benefit to that product
+5. Set customer portal visibility to **private**
+
+### Step 3: Copy Credentials to `.env`
 
 | Environment Variable | Where to Find |
 |---------------------|---------------|
@@ -163,134 +297,149 @@ The event name and metadata key must match exactly. The server sends usage event
 | `POLAR_SERVER` | Use `sandbox` locally, `production` for live billing |
 | `POLAR_CREDITS_METER_ID` | Meter ID from the meter URL |
 
-### 5. Set Up the Database
+---
 
-Generate the Prisma client:
+## Database Setup
 
+### Requirements
+- A running PostgreSQL instance (local or cloud-hosted)
+
+### Setup Steps
+
+From the repository root:
+
+1. **Generate Prisma client:**
 ```bash
 bun run --cwd packages/database db:generate
 ```
 
-Apply the Prisma schema to your Postgres database:
-
+2. **Push the schema to your database:**
 ```bash
 bun run --cwd packages/database db:push
-# or use db:migrate for production
 ```
 
-### 6. Run the Server
+> For production, use `db:migrate` instead of `db:push` for better migration management.
 
-```bash
-bun run dev:server
-```
+---
 
-The API runs on `http://localhost:3000`.
+## Running the App
 
-### 7. Run the CLI
+### Option 1: Quickstart (Using Hosted Backend)
 
-In another terminal:
+The CLI connects to my hosted Railway backend by default. No local server required.
 
 ```bash
 bun run dev:cli
 ```
 
-To build and link the local CLI binary:
+That's it! Log in with Clerk and start using KnightCode.
 
+### Option 2: Fully Local Setup (CLI + Server + Database)
+
+1. **Start PostgreSQL** and ensure `DATABASE_URL` is set correctly
+
+2. **Generate and push Prisma schema:**
 ```bash
-bun run link:cli
-nightcode
+bun run --cwd packages/database db:generate
+bun run --cwd packages/database db:push
 ```
+
+3. **Start the server:**
+```bash
+bun run dev:server
+```
+Server runs at: `http://localhost:3000`
+
+4. **Start the CLI (pointing to local server):**
+```bash
+API_URL=http://localhost:3000 bun run dev:cli
+```
+
+5. **Log in and use KnightCode:**
+   - Login via the CLI's OAuth flow
+   - Create a session
+   - Send chat messages
 
 ---
 
-## 💻 Development Commands
+## Production Deployment
+
+### Recommended Architecture
+
+KnightCode runs as two services:
+1. **Server API** - Deploy to a platform that supports Bun (Railway, Fly.io, Vercel, etc.)
+2. **CLI** - Runs on the user's machine (or hosted for demos)
+
+### Server Deployment (Railway)
+
+1. **Build the server:**
+```bash
+bun run --cwd packages/server build
+```
+
+2. **Deploy to Railway:**
+   - Create a new Web Service
+   - Choose a Bun/Node-compatible runtime
+   - Configure the start command to run `packages/server/dist/index.js`
+
+3. **Configure Railway environment variables:**
+   - `DATABASE_URL`
+   - `JWT_SECRET`
+   - All `CLERK_*` values
+   - All `POLAR_*` values
+   - AI provider keys (`ANTHROPIC_API_KEY` and/or `OPENAI_API_KEY`)
+
+4. **Update Clerk redirect URL:**
+   - Add `https://<your-railway-domain>/auth/callback` to Clerk's OAuth redirect URIs
+
+5. **Update CLI API URL:**
+   - Set `API_URL=https://<your-railway-domain>` in the CLI environment
+
+---
+
+## Development Commands
 
 | Command | Description |
 |---------|-------------|
 | `bun run dev:cli` | Start the CLI in watch mode |
 | `bun run dev:server` | Start the Hono server with hot reload |
 | `bun run build:cli` | Build the CLI package |
-| `bun run link:cli` | Build and link the nightcode executable |
+| `bun run link:cli` | Build and link the `nightcode` executable locally |
 | `bun run --cwd packages/database db:generate` | Generate the Prisma client |
 | `bun run --cwd packages/database db:push` | Push schema to database |
 | `bun run --cwd packages/server build` | Build the server for production |
 
 ---
 
-## 📦 Packages
+## Project Structure
 
-| Package | Description |
-|---------|-------------|
-| `@nightcode/cli` | Terminal UI and client-side tool execution |
-| `@nightcode/server` | Hono API, AI streaming, auth checks, and billing ingestion |
-| `@nightcode/database` | Prisma client and database schema |
-| `@nightcode/shared` | Shared Zod schemas, AI tool contracts, and model definitions |
-
----
-
-## 🔐 Authentication Flow
-
-1. CLI initiates OAuth flow and opens browser
-2. User authenticates with Clerk
-3. Clerk redirects to `/auth/callback` on the server
-4. Server exchanges code for tokens and sends to local CLI callback
-5. CLI stores session token for subsequent API requests
-
-Protected routes:
-- `/sessions/*`
-- `/chat/*`
-- `/billing/*`
+```
+packages/
+├── cli/                         # OpenTUI + React terminal client
+│   ├── bin/                     # nightcode executable shim
+│   └── src/
+│       ├── components/          # Terminal UI components, dialogs, messages
+│       ├── hooks/               # Chat and UI hooks
+│       ├── layouts/             # Root terminal layouts
+│       ├── lib/                 # API client, auth, OAuth, local tool execution
+│       ├── providers/           # Dialog, keyboard, prompt, theme, toast providers
+│       └── screens/             # Home, new session, and session screens
+├── database/                    # Prisma schema, generated client, database exports
+├── server/                      # Hono API for auth, billing, sessions, and chat
+└── shared/                      # Shared schemas, tool contracts, and model registry
+```
 
 ---
 
-## 💳 Billing & Credits
+## Demo
 
-The server uses a credit-based billing system via Polar:
+Watch KnightCode in action:
 
-1. **Middleware `requireCreditsBalance`**:
-   - Denies requests when credits are `<= 0`
-   - Returns HTTP 402 (Payment Required)
-
-2. **On each successful chat completion**:
-   - Computes estimated credits from `LanguageModelUsage`
-   - Calls `polar.events.ingest()` with usage data
-
-3. **User workflows**:
-   - `/billing/checkout` - Opens Polar checkout URL for purchasing credits
-   - `/billing/portal` - Opens customer's Polar portal
+[![KnightCode Demo](https://img.youtube.com/vi/YOUR_VIDEO_ID/0.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
 
 ---
 
-## 🚢 Production Deployment
-
-### Recommended Architecture
-
-NightCode runs as two services:
-1. **Server API** - Deploy to a platform that supports Bun
-2. **CLI** - Runs on the user's machine (or hosted for demos)
-
-### Server Deployment
-
-1. Build the server:
-   ```bash
-   bun run --cwd packages/server build
-   ```
-
-2. Deploy the built output to your hosting platform
-
-3. Set all required environment variables in your platform dashboard
-
-### Container Deployment
-
-If containerizing, ensure all environment variables are set:
-- `DATABASE_URL`
-- `CLERK_SECRET_KEY` + `CLERK_PUBLISHABLE_KEY`
-- `POLAR_*` variables
-- AI provider credentials
-
----
-
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Prisma Errors
 - **Verify** `DATABASE_URL` is correct
@@ -319,30 +468,7 @@ If containerizing, ensure all environment variables are set:
 
 ---
 
-## 📝 Environment Variables Reference
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `API_URL` | ✅ | Server API URL (default: http://localhost:3000) |
-| `DATABASE_URL` | ✅ | PostgreSQL connection string |
-| `ANTHROPIC_API_KEY` | ❌* | Anthropic API key |
-| `OPENAI_API_KEY` | ❌* | OpenAI API key |
-| `CLERK_FRONTEND_API` | ✅ | Clerk frontend API URL |
-| `CLERK_OAUTH_CLIENT_SECRET` | ✅ | Clerk OAuth client secret |
-| `CLERK_OAUTH_CLIENT_ID` | ✅ | Clerk OAuth client ID |
-| `CLERK_PUBLISHABLE_KEY` | ✅ | Clerk publishable key |
-| `CLERK_SECRET_KEY` | ✅ | Clerk secret key |
-| `JWT_SECRET` | ✅ | JWT secret for session tokens |
-| `POLAR_ACCESS_TOKEN` | ✅ | Polar access token |
-| `POLAR_PRODUCT_ID` | ✅ | Polar product ID for credits |
-| `POLAR_SERVER` | ❌ | Polar environment (sandbox/production) |
-| `POLAR_CREDITS_METER_ID` | ✅ | Polar meter ID for credits |
-
-*At least one AI provider is required.
-
----
-
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/amazing-feature`)
@@ -352,13 +478,13 @@ If containerizing, ensure all environment variables are set:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - [Bun](https://bun.sh/) - Fast JavaScript runtime
 - [Hono](https://hono.dev/) - Lightweight web framework
