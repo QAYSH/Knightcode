@@ -102,7 +102,7 @@ bun run --cwd packages/database db:push
 ```
 * Start the server in one terminal:
 ```bash
-bun run dev:server
+bun install --ignore-scripts
 ```
 * Start the CLI in a second terminal:
 ```bash
