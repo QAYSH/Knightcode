@@ -24,7 +24,7 @@ const sessionLocationSchema = z.object({
       .object({
         message: z.string(),
         mode: z.custom<ModeType>(),
-        model: z.custom<SupportedChatModelId>(),
+        model: z.string(),
       })
       .optional(),
 });
@@ -60,7 +60,7 @@ function SessionChat({
     initialPrompt,
  }: { 
     session: SessionData,
-    initialPrompt?: { message: string; mode: ModeType; model: SupportedChatModelId}
+    initialPrompt?: { message: string; mode: ModeType; model: string}
  }) {
     const [initialMessages] =useState(() => session.messages as unknown as Message[]);
     const { mode, model } = usePromptConfig();

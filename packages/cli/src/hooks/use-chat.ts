@@ -12,6 +12,8 @@ import { apiClient } from "../lib/api-client";
 import { executeLocalTool } from "../lib/local-tool";
 import { type SupportedChatModelId } from "../../../shared/src/models";
 import { getAuth } from "../lib/auth";
+import { isStandaloneMode } from "../lib/config";
+import { localApp } from "../lib/local-server";
 
 export type ChatMessageMetadata = {
     mode?: ModeType;
@@ -31,9 +33,15 @@ export type Message = UIMessage<ChatMessageMetadata, never, ChatTools>;
 
 export function useChat(sessionId: string, initialMessages: Message[]) {
     const transport = useMemo(() => {
+        const isStandalone = isStandaloneMode();
+
         return new DefaultChatTransport<Message>({
             api: apiClient.chat.$url().toString(),
+            fetch: isStandalone
+                ? (input, init) => localApp.fetch(new Request(input, init))
+                : undefined,
             headers() {
+                if (isStandalone) return new Headers();
                 const auth = getAuth();
                 return auth ? { Authorization: `Bearer ${auth.token}` } : new Headers();
             },
@@ -49,14 +57,14 @@ export function useChat(sessionId: string, initialMessages: Message[]) {
                 ? [previousMessage, message]
                 : [message];
             
-            return {
-                body: {
-                    id: sessionId,
-                    messages: requestMessages,
-                    mode: message.metadata?.mode ?? metadata?.model,
-                    model: message.metadata?.model ?? metadata?.model,
-                },
-            } 
+                return {
+                    body: {
+                        id: sessionId,
+                        messages: requestMessages,
+                        mode: message.metadata?.mode ?? metadata?.mode ?? "BUILD",
+                        model: message.metadata?.model ?? metadata?.model ?? "gpt-4o",
+                    },
+                };
             }
         });
     }, [sessionId]);
@@ -92,7 +100,7 @@ export function useChat(sessionId: string, initialMessages: Message[]) {
         messages: chat.messages,
         status: chat.status,
         error: chat.error,
-        submit: (params: { userText: string; mode: ModeType; model: SupportedChatModelId }) =>{
+        submit: (params: { userText: string; mode: ModeType; model: SupportedChatModelId | string }) =>{
             chat.sendMessage({
                 text: params.userText,
                 metadata: {

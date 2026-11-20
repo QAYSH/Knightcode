@@ -1,16 +1,12 @@
- import { useCallback } from 'react';
+import { useCallback } from 'react';
 import { useDialog } from '../../providers/dialog';
 import { DialogSearchList } from '../dialog-search-list';
-import { THEMES } from '../../theme';
-import { Mode } from '../../../../database/src/enum';
 import type { SupportedChatModelId } from '../../../../shared/src/models';
 
 type ModelsDialogueContentProps = {
-   models: SupportedChatModelId[];
-    onSelectModel: (modelId: SupportedChatModelId) => void;
+    models: (SupportedChatModelId | string)[];
+    onSelectModel: (modelId: SupportedChatModelId | string) => void;
 };
-
-
 
 export const ModelsDialogContent = ({
     models, 
@@ -18,13 +14,10 @@ export const ModelsDialogContent = ({
 }: ModelsDialogueContentProps) => {
     const dialog = useDialog();
 
-
-
-  const handleSelect = useCallback((modelId: SupportedChatModelId) => {
+  const handleSelect = useCallback((modelId: SupportedChatModelId | string) => {
     onSelectModel(modelId);
     dialog.close();
-    
-},[onSelectModel, dialog])
+}, [onSelectModel, dialog]);
 
 return (
     <DialogSearchList 

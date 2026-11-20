@@ -25,7 +25,7 @@ function resolveInsideCwd(path: string | undefined) {
 
 function truncate(value: string, limit: number) {
     return value.length > limit
-        ? `%{value.slice(0, limit)}\n... (truncated, ${value.length} total chars)` : value;
+        ? `${value.slice(0, limit)}\n... (truncated, ${value.length} total chars)` : value;
 }
 
 export async function executeLocalTool(toolName: string, input: unknown, mode: ModeType) {
@@ -80,47 +80,86 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
         case "grep" : {
             const { pattern, path, include } = toolInputSchemas.grep.parse(input);
             const { cwd, resolved } = resolveInsideCwd(path);
-            const args = [
-                "-rn",
-                "--color=never",
-                "--exclude-dir=node_modules",
-                "--exclude-dir=.git",
-                "-E",
-            ];
-            if (include) args.push(`--include=${include}`);
-            args.push(pattern, resolved);
+            const hasGrep = Boolean(Bun.which("grep"));
 
+            if (hasGrep) {
+                const args = [
+                    "-rn",
+                    "--color=never",
+                    "--exclude-dir=node_modules",
+                    "--exclude-dir=.git",
+                    "-E",
+                ];
+                if (include) args.push(`--include=${include}`);
+                args.push(pattern, resolved);
 
-            const proc = Bun.spawn(["grep", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
-            const [stdout, stderr] = await Promise.all([
-                new Response(proc.stdout).text(),
-                new Response(proc.stderr).text(),
-            ]);
-            const exitCode = await proc.exited;
+                const proc = Bun.spawn(["grep", ...args], { cwd, stdout: "pipe", stderr: "pipe" });
+                const [stdout, stderr] = await Promise.all([
+                    new Response(proc.stdout).text(),
+                    new Response(proc.stderr).text(),
+                ]);
+                const exitCode = await proc.exited;
 
-            if  (exitCode !== 0 && exitCode !== 1) throw new Error(`grep failed: ${stderr.trim()}`);
-            if (!stdout.trim()) return { matches: [], message: 'No matches found'};
+                if  (exitCode !== 0 && exitCode !== 1) throw new Error(`grep failed: ${stderr.trim()}`);
+                if (!stdout.trim()) return { matches: [], message: 'No matches found'};
 
-            const lines = stdout.trim().split("\n");
+                const lines = stdout.trim().split("\n");
+                const matches: { file: string; line: number; content: string}[] = [];
+                let truncated = false;
+
+                for (const line of lines) {
+                    if (matches.length >= MAX_MATCHES) {
+                        truncated = true;
+                        break;
+                    }
+                    const match = line.match(/^(.+?):(\d*):(.*)$/);
+                    if (match) {
+                        matches.push({
+                            file: relative(cwd, match[1]!),
+                            line: Number(match[2]),
+                            content: match[3]!,
+                        });
+                    }
+                }
+
+                return { matches, ...(truncated ? { truncated: true, totalMatches: lines.length} : {}) };
+            }
+
+            // Cross-platform JS fallback when grep binary is not installed
+            const regex = new RegExp(pattern);
+            const globPattern = include || "**/*";
+            const glob = new Bun.Glob(globPattern);
             const matches: { file: string; line: number; content: string}[] = [];
+            let totalMatches = 0;
             let truncated = false;
 
-            for (const line of lines) {
-                if (matches.length >= MAX_MATCHES) {
-                    truncated = true;
-                    break;
-                }
-                const match = line.match(/^(.+?):(\d*):(.*)$/);
-                if (match) {
-                    matches.push({
-                        file: relative(cwd, match[1]!),
-                        line: Number(match[2]),
-                        content: match[3]!,
-                    });
+            for await (const match of glob.scan({ cwd: resolved, dot: false, onlyFiles: true })) {
+                if (match.includes("node_modules") || match.includes(".git")) continue;
+                const filePath = resolve(resolved, match);
+                try {
+                    const fileContent = await readFile(filePath, "utf-8");
+                    const fileLines = fileContent.split("\n");
+                    for (let i = 0; i < fileLines.length; i++) {
+                        if (regex.test(fileLines[i]!)) {
+                            totalMatches++;
+                            if (matches.length < MAX_MATCHES) {
+                                matches.push({
+                                    file: relative(cwd, filePath),
+                                    line: i + 1,
+                                    content: fileLines[i]!,
+                                });
+                            } else {
+                                truncated = true;
+                            }
+                        }
+                    }
+                } catch {
+                    // Ignore binary/unreadable files
                 }
             }
 
-            return { matches, ...(truncated ? { truncated: true, totalMatches: lines.length} : {}) };
+            if (matches.length === 0) return { matches: [], message: 'No matches found'};
+            return { matches, ...(truncated ? { truncated: true, totalMatches } : {}) };
         };
         case "writeFile": {
             const { path, content } =toolInputSchemas.writeFile.parse(input);
@@ -148,7 +187,14 @@ export async function executeLocalTool(toolName: string, input: unknown, mode: M
         }
         case "bash" : {
             const { command, timeout = DEFAULT_TIMEOUT } = toolInputSchemas.bash.parse(input);
-            const proc = Bun.spawn(["bash", "-c", command], {
+            const isWin = process.platform === "win32";
+            let shellCmd = ["bash", "-c", command];
+
+            if (isWin && !Bun.which("bash")) {
+                shellCmd = ["cmd.exe", "/c", command];
+            }
+
+            const proc = Bun.spawn(shellCmd, {
                 cwd: resolveInsideCwd(".").resolved,
                 stdout:"pipe",
                 stderr: "pipe",

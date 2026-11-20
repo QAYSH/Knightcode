@@ -16,5 +16,6 @@ export {
  type ToolContracts,
  type ModeType,
 } from './schemas';
+export { buildSystemPrompt } from './system-prompt';
 
 

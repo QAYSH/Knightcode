@@ -3,14 +3,15 @@ import type { ReactNode } from "react";
 import { DEFAULT_CHAT_MODEL_ID } from "../../../../shared/src/models";
 import { type SupportedChatModelId } from "../../../../shared/src/models";
 import { Mode, type ModeType } from "../../../../shared/src/schemas";
+import { getDefaultModel } from "../../lib/config";
 
 
 type PromptConfigContextValue = {
     mode: ModeType;
     toggleMode: () => void;
     setMode: (mode: ModeType) => void;
-    model: SupportedChatModelId;
-    setModel: (model: SupportedChatModelId) => void;
+    model: SupportedChatModelId | string;
+    setModel: (model: SupportedChatModelId | string) => void;
 };
 
 
@@ -30,7 +31,9 @@ type PromptConfigProviderProps = {
 
 export function PromptConfigProvider({ children}: PromptConfigProviderProps) {
     const [mode, setMode] = useState<ModeType>(Mode.BUILD);
-    const [model, setModel] =useState<SupportedChatModelId>(DEFAULT_CHAT_MODEL_ID);
+    const [model, setModel] = useState<SupportedChatModelId | string>(
+        () => getDefaultModel() || DEFAULT_CHAT_MODEL_ID
+    );
 
     const toggleMode = useCallback(() => {
         setMode((m) => (m === Mode.BUILD ? Mode.PLAN : Mode.BUILD));
