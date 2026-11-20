@@ -1,9 +1,10 @@
-import { SUPPORTED_CHAT_MODELS } from "../../../../shared/src/models";
 import { ThemeDialogContent, SessionsDialogContent, AgentsDialogContent, ModelsDialogContent} from "../dialogs";
 import type { Command } from "./types";
 import { performLogin } from "../../lib/oauth";
 import { clearAuth } from "../../lib/auth";
 import { openBillingPortal, openUpgradeCheckout } from "../../lib/upgrade";
+import { getAvailableModels } from "../../lib/local-models";
+import { isStandaloneMode } from "../../lib/config";
 
 export const COMMANDS: Command[] = [
     {
@@ -33,7 +34,7 @@ export const COMMANDS: Command[] = [
           ctx.dialog.open({
             title:"Select Model",
             children: <ModelsDialogContent 
-            models={SUPPORTED_CHAT_MODELS.map((model) => model.id)}onSelectModel={ctx.setModel}/>
+            models={getAvailableModels()} onSelectModel={ctx.setModel}/>
           })
         }
     },
@@ -64,6 +65,14 @@ export const COMMANDS: Command[] = [
         description:"Sign in with your browser",
         value: "/login",
         action: async (ctx) => {
+            if (isStandaloneMode()) {
+                ctx.toast.show({
+                    variant: "info",
+                    message: "Standalone mode active (using local API keys, no login needed)",
+                });
+                return;
+            }
+
             ctx.toast.show({ message: "Opening browser to login..." });
 
             try {
@@ -92,6 +101,14 @@ export const COMMANDS: Command[] = [
         description:"Buy more credits",
         value: "/upgrade",
         action: async (ctx) => {
+            if (isStandaloneMode()) {
+                ctx.toast.show({
+                    variant: "info",
+                    message: "Standalone mode active (unlimited usage with your own keys)",
+                });
+                return;
+            }
+
             ctx.toast.show({ message: "Opening credits checkout..." });
 
             try {
@@ -111,8 +128,15 @@ export const COMMANDS: Command[] = [
         description:"Open billing portal in your browser",
         value: "/usage",
         action: async (ctx) => {
-            ctx.toast.show({ message: "Opening billing portal..." });
+            if (isStandaloneMode()) {
+                ctx.toast.show({
+                    variant: "info",
+                    message: "Standalone mode active (usage is direct with your provider)",
+                });
+                return;
+            }
 
+            ctx.toast.show({ message: "Opening billing portal..." });
 
             try {
                 await openBillingPortal();

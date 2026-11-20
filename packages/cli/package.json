@@ -19,6 +19,8 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@ai-sdk/anthropic": "^4.0.29",
+    "@ai-sdk/openai": "^4.0.29",
     "@ai-sdk/react": "^4.0.62",
     "@nightcode/shared": "workspace:*",
     "@opentui/core": "^0.4.1",
